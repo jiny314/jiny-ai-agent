@@ -24,5 +24,5 @@ def send(subject, body):
     msg["To"]      = os.environ["MAIL_TO"]
     msg.set_content(body)
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as s:
-        s.login(os.environ["MAIL_USER"], os.environ["vwhcioxjpluzxbop"])
+        s.login(os.environ["MAIL_USER"], os.environ["MAIL_APP_PASSWORD"])
         s.send_message(msg)
