@@ -26,3 +26,13 @@ def send(subject, body):
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as s:
         s.login(os.environ["MAIL_USER"], os.environ["MAIL_APP_PASSWORD"])
         s.send_message(msg)
+
+if __name__ == "__main__":
+    items = collect()
+    if items:
+        # 뉴스 항목들을 메일 본문 텍스트로 변환
+        body = "\n\n".join([f"[{item['kw']}] {item['title']}\n{item['link']}" for item in items])
+        send("오늘의 뉴스 다이제스트", body)
+        print(f"성공: {len(items)}개의 뉴스를 메일로 발송했습니다.")
+    else:
+        print("수집된 최신 뉴스가 없습니다.")
