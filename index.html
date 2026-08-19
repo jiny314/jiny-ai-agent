@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이상진 | AX Project Manager 포트폴리오</title>
+    <style>
+        :root {
+            --bg-color: #fafafa;
+            --card-bg: #ffffff;
+            --text-primary: #09090b;
+            --text-secondary: #71717a;
+            --text-muted: #a1a1aa;
+            --border-color: #e4e4e7;
+            --border-hover: #a1a1aa;
+            --accent-color: #09090b;
+            --tag-bg: #f4f4f5;
+            --tag-text: #3f3f46;
+            --result-bg: #f8fafc;
+            --result-border: #e2e8f0;
+            --result-text: #0f172a;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            --focus-ring: 2px solid #09090b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 2.5rem 1.5rem;
+            max-width: 1080px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            text-align: left;
+            padding: 2rem 2.5rem;
+            margin-bottom: 2.5rem;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        header h1 {
+            font-size: 1.85rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            margin-bottom: 0.35rem;
+        }
+
+        header p.tagline {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-links {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            background-color: #ffffff;
+            padding: 0.4rem 0.85rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            transition: all 0.15s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .contact-links a:hover {
+            border-color: var(--border-hover);
+            background-color: #fafafa;
+        }
+
+        /* Filters */
+        .filter-container {
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 2rem;
+        }
+
+        .filter-btn {
+            background-color: transparent;
+            color: var(--text-secondary);
+            border: 1px solid transparent;
+            padding: 0.4rem 0.9rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.15s ease;
+        }
+
+        .filter-btn:hover {
+            color: var(--text-primary);
+            background-color: var(--tag-bg);
+        }
+
+        .filter-btn.active {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            border-color: var(--accent-color);
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+            align-items: start;
+        }
+
+        @media (min-width: 640px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Story Card */
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .card:hover {
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .tag {
+            background-color: var(--tag-bg);
+            color: var(--tag-text);
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            letter-spacing: -0.015em;
+            margin-bottom: 1.25rem;
+            line-height: 1.4;
+            color: var(--text-primary);
+        }
+
+        .highlight-result {
+            background-color: var(--result-bg);
+            color: var(--result-text);
+            padding: 0.75rem 0.9rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            letter-spacing: -0.01em;
+            text-align: left;
+            margin-top: auto;
+            border: 1px solid var(--result-border);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .highlight-result::before {
+            content: "";
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #10b981;
+            flex-shrink: 0;
+        }
+
+        /* Detail Accordion */
+        .card-detail {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, margin-top 0.2s ease;
+            opacity: 0;
+            border-top: 0px solid var(--border-color);
+        }
+
+        .card.open .card-detail {
+            max-height: 1000px;
+            opacity: 1;
+            margin-top: 1.25rem;
+            padding-top: 1rem;
+            border-top-width: 1px;
+        }
+
+        .star-item {
+            margin-bottom: 0.85rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            display: flex;
+            gap: 0.6rem;
+        }
+
+        .star-label {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 0.75rem;
+            background-color: var(--tag-bg);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            height: fit-content;
+            margin-top: 0.15rem;
+            flex-shrink: 0;
+        }
+
+        .toggle-icon {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            transition: transform 0.2s ease;
+        }
+
+        .card.open .toggle-icon {
+            transform: rotate(180deg);
+            color: var(--text-primary);
+        }
+
+        footer {
+            text-align: left;
+            margin-top: 4rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>이상진</h1>
+        <p class="tagline">현장의 반복 업무를 AI 기술로 전환하는 AX Project Manager</p>
+        <div class="contact-links">
+            <a href="mailto:example@example.com">example@example.com</a>
+            <a href="https://github.com/example" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="#">Resume.pdf</a>
+        </div>
+    </header>
+
+    <nav class="filter-container" aria-label="역량 필터링">
+        <button class="filter-btn active" data-filter="all">전체</button>
+    </nav>
+
+    <main class="grid" id="story-grid">
+        <!-- Dynamic Cards -->
+    </main>
+
+    <footer>
+        <p>&copy; 2026 이상진. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const STORIES = [
+            {
+                id: 1,
+                competency: "협업능력 & 갈등조율",
+                title: "다양한 이해관계자 수용과 탄력 배차로 품질 클레임 제로화",
+                metric: "품질 클레임 0건 & 반품률 대폭 감소",
+                situation: "하루 5~10곳 이상 동시 타설 현장 관리. 시공사, 감리/감독관의 요구사항이 상이하고 기후 및 설비 변수가 자주 발생하는 환경.",
+                task: "배차 지연 및 품질 편차 발생 시 공정 중단/반품 리스크를 예방하고 이해관계자와의 소통으로 타설을 차질 없이 완수해야 함.",
+                action: "감독관 입회하 투명한 데이터 측정·공유로 신뢰를 구축함. 다수의 대형 현장에서 축적한 표준 지침을 기반으로 현장 맞춤형 솔루션을 제안하고, 타설 속도를 실시간으로 파악하여 공장 배차를 탄력 조정함.",
+                result: "품질 클레임 제로화 달성 및 반품률 대폭 감소. 타설 지연 예방으로 시공 품질 확보 및 '지역 내 최고 품질' 평가를 획득함."
+            },
+            {
+                id: 5,
+                competency: "창의적 문제해결 & AX",
+                title: "생성형 AI 기반 수동 계산 오시정 및 서류 프로세스 혁신",
+                metric: "휴먼 에러 0% 원천 차단 & 작성 시간 대폭 단축",
+                situation: "1층 시험실과 2층 사무실 이원화로 PC 활용이 어렵고, 숙련되지 않은 동료들의 수동 계산으로 계산 오류 리스크가 존재했던 환경.",
+                task: "수동 계산 방식의 번거로움과 오답 발생 리스크를 원천 차단하고 업무 생산성을 높일 혁신 프로세스 필요.",
+                action: "ChatGPT 등 생성형 AI를 활용하여 복잡한 시험 공식을 구조화하고 스마트폰 간편 입력 커스텀 프롬프트를 개발. 교차 검증 시스템을 도입하여 현장 데이터 오차를 자동 정형화함.",
+                result: "휴먼 에러를 0%로 원천 차단하여 데이터 정확성 극대화. 반복 업무 시간 대폭 단축 및 스마트한 현장 일하는 방식 정착."
+            },
+            {
+                id: 2,
+                competency: "시장조사 & 데이터 분석",
+                title: "원자재 가격 폭등 시 데이터 기반 최적 배합 도출 및 원가 방어",
+                metric: "설계강도 달성률 100% & 제조원가 절감",
+                situation: "지정학적 위기로 유가, 시멘트, 혼화제 등 핵심 원자재 가격이 급등하여 제조 원가 부담이 가중된 상황.",
+                task: "원가 절감을 위해 배합비를 조정하면서도 KS 규격 및 고객 요구 압축강도를 안정적으로 발현하는 배합 도출 필요.",
+                action: "고로슬래그 치환 비율별 7일/28일 강도 데이터를 정밀 분석함. 골재 물성·단가 종합 분석으로 가성비 우량 골재를 선별하고, 대형 구조물 현장 비파괴 시험으로 실구조체 강도 발현을 현장 검증함.",
+                result: "원가 상승 압박 속 수익성 방어 성공. 규격별 설계기준 압축강도 달성률 100% 기록 및 대형 건설사/감리단 신뢰 확보."
+            },
+            {
+                id: 3,
+                competency: "동기부여 & 팀워크",
+                title: "고강도 주방 환경 내 솔선수범 코칭과 주방 운영 효율화",
+                metric: "팀원 이탈률 0% & 피크타임 조리 지연 0건",
+                situation: "한여름 양식당 주방 피크타임 주문 폭주 및 높은 열기로 팀 전체의 피로도와 신입 동료들의 이탈 위험이 극에 달한 상황.",
+                task: "팀원 사기 저하 및 이탈을 방지하고 피크타임을 차질 없이 소화하기 위한 팀워크 구축 필요.",
+                action: "직접 케어 식사 준비, 피크타임 후 설거지 파트 지원 등 솔선수범함. 웍질 및 칼질이 미숙한 신입 동료를 대상으로 1:1 맞춤형 안전 조리 코칭을 진행함.",
+                result: "신입 동료 숙련도 단축 및 이탈 없는 끈끈한 팀워크 구축. 피크타임 주문 누락 및 지연 없는 원활한 매장 운영 달성."
+            },
+            {
+                id: 4,
+                competency: "도전 & 위기 돌파",
+                title: "디지털 툴과 자립심을 활용한 해외 현지 고립 위기 극복",
+                metric: "AI 툴 기반 돌발 변수 해결률 100%",
+                situation: "첫 홀로 일본 여행 중 야간 산간 온천 마을에서 대중교통이 모두 끊겨 숙소 고립 위기 발생.",
+                task: "언어 장벽과 혹한의 날씨 속에서 능동적 판단과 기술적 제어를 통해 안전하게 여정을 완수해야 함.",
+                action: "당황하지 않고 불빛을 따라 50분을 이동하여 버스 회사를 발견함. 지도 앱과 AI 음성 번역기를 적극 활용해 현지인과 유연하게 소통하며 도움을 요청함.",
+                result: "디지털 툴(AI/지도)의 유연한 활용과 직접 발로 뛰는 행동력으로 위기 상황 극복 및 문제 해결 자립심 체득."
+            },
+            {
+                id: 6,
+                competency: "재정 관리 & 계획성",
+                title: "한정 예산 내 데이터 기반 정밀 비용 분석 및 동선 최적화",
+                metric: "예산 오차 0% & 이동 시간 최적화",
+                situation: "직접 모은 자금으로 4박 5일 해외 여행 계획. 복잡한 근교 교통비와 관광지 물가 변수가 상존함.",
+                task: "한정된 예산안에서 가격 비교 및 교통수단 요금/시간을 분석하여 금전·시간 효율을 극대화해야 함.",
+                action: "유사 품목 간 가성비를 비교 검토하고 전철·지하철·고속버스·택시 등 수단별 요금 및 소요 시간을 다각도로 분석하여 최적의 동선 수립.",
+                result: "예산 초과 없이 4박 5일 일정 완수. 한정된 리소스 속에서 비용 절감과 시간 최적화를 동시에 달성함."
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const grid = document.getElementById('story-grid');
+            const filterContainer = document.querySelector('.filter-container');
+
+            const competencies = ['all', ...new Set(STORIES.map(s => s.competency))];
+            filterContainer.innerHTML = competencies.map(comp => {
+                const label = comp === 'all' ? '전체' : comp;
+                return `<button class="filter-btn ${comp === 'all' ? 'active' : ''}" data-filter="${comp}">${label}</button>`;
+            }).join('');
+
+            function renderCards(filter = 'all') {
+                grid.innerHTML = '';
+                const filtered = filter === 'all' ? STORIES : STORIES.filter(s => s.competency === filter);
+
+                filtered.forEach(story => {
+                    const card = document.createElement('article');
+                    card.className = 'card';
+                    card.tabIndex = 0;
+
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <span class="tag">${story.competency}</span>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <h2 class="card-title">${story.title}</h2>
+                        <div class="highlight-result">${story.metric}</div>
+                        <div class="card-detail">
+                            <div class="star-item"><span class="star-label">S</span><div>${story.situation}</div></div>
+                            <div class="star-item"><span class="star-label">T</span><div>${story.task}</div></div>
+                            <div class="star-item"><span class="star-label">A</span><div>${story.action}</div></div>
+                            <div class="star-item"><span class="star-label">R</span><div>${story.result}</div></div>
+                        </div>
+                    `;
+
+                    const toggleCard = () => {
+                        card.classList.toggle('open');
+                    };
+
+                    card.addEventListener('click', toggleCard);
+                    card.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            toggleCard();
+                        }
+                    });
+
+                    grid.appendChild(card);
+                });
+            }
+
+            filterContainer.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('filter-btn')) return;
+
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                e.target.classList.add('active');
+                renderCards(e.target.dataset.filter);
+            });
+
+            renderCards();
+        });
+    </script>
+</body>
+</html>
