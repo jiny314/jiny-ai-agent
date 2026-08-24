@@ -4,12 +4,17 @@
 # 그래프/시각화 이미지 무시
 *.png
 
-# 파이썬 캐시 폴더 무시
-__pycache__/
-
 .venv/
 venv/
 *.pkl
 *.csv
 *.ipynb_checkpoints/
 __pycache__/
+
+# Ignore data files
+*.csv
+*.xlsx
+*.parquet
+*.json
+data/
+datasets/
