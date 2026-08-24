@@ -18,3 +18,5 @@ __pycache__/
 *.json
 data/
 datasets/
+ABA_1st_proj/
+*.zip
