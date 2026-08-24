@@ -1,4 +1,4 @@
-import anthropic
+import Test.anthropic as anthropic
 
 client = anthropic.Anthropic()
 
