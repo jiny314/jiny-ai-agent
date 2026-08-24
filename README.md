@@ -2,6 +2,6 @@
 
 ## 프로젝트 목록
 * **1차 프로젝트**: 초개인화 페르소나 기반 금융 상품 패키징 및 교차 판매(Cross-selling) 전략 도출
-  # Data Source & Citation
+# Data Source & Citation
   - 출처: 한국지능정보사회진흥원(NIA) AI Hub - 「금융상품·서비스 및 소비자 특성 데이터」
   - 본 노트북은 AI Hub 이용 정책을 준수하며, 원본 데이터는 포함되어 있지 않습니다.
