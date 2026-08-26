@@ -4,8 +4,6 @@
 # 그래프/시각화 이미지 무시
 *.png
 
-.venv/
-venv/
 *.pkl
 *.csv
 *.ipynb_checkpoints/
@@ -20,3 +18,14 @@ data/
 datasets/
 ABA_1st_proj/
 *.zip
+# 가상환경
+.venv/
+venv/
+
+# 노트북 임시 파일
+.ipynb_checkpoints/
+__pycache__/
+
+# OS 생성 파일
+.DS_Store
+Thumbs.db
