@@ -1,5 +1,5 @@
 # ==========================================
-# Data Files & Datasets
+# Data Files & Datasets (대용량 및 개인정보 보호)
 # ==========================================
 *.pkl
 *.csv
@@ -12,21 +12,21 @@ datasets/
 **/ABA_1st_proj/
 
 # ==========================================
-# Image & Visualization Output
-# ==========================================
-*.png
-
-# ==========================================
 # Python & Jupyter Environment
 # ==========================================
 __pycache__/
 *.py[cod]
+*$py.class
 .venv/
 venv/
+env/
+ENV/
 .ipynb_checkpoints/
 
 # ==========================================
-# Operating System Files
+# Operating System & IDE Files
 # ==========================================
 .DS_Store
 Thumbs.db
+.vscode/
+.idea/

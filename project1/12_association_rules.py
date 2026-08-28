@@ -1,100 +1,132 @@
 from pathlib import Path
+import platform
 import sys
 import warnings
+import matplotlib.pyplot as plt
+import networkx as nx
+import pandas as pd
 from mlxtend.frequent_patterns import association_rules, fpgrowth
 from mlxtend.preprocessing import TransactionEncoder
-import pandas as pd
 
 warnings.filterwarnings("ignore")
 
-# 1. 실행 환경 독립적 동적 상대 경로 설정
-BASE_DIR = Path(__file__).resolve().parent
-INPUT_PATH = BASE_DIR / "output" / "customer_clustered_k3.pkl"
-OUTPUT_DIR = BASE_DIR / "output"
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+# 1. OS 독립적 한글 폰트 자동 설정
+system_os = platform.system()
+if system_os == "Windows":
+    plt.rcParams["font.family"] = "Malgun Gothic"
+elif system_os == "Darwin":
+    plt.rcParams["font.family"] = "AppleGothic"
+else:
+    plt.rcParams["font.family"] = "NanumGothic"
+plt.rcParams["axes.unicode_minus"] = False
 
-# 2. 클러스터링 데이터 로드 및 예외 처리
-print("[1/4] 클러스터링 데이터(customer_clustered_k3.pkl)를 로드합니다...")
+# 2. 동적 경로 설정 및 군집화 데이터 로드
+BASE_DIR = Path(__file__).resolve().parent
+INPUT_PATH = BASE_DIR / "output" / "customer_clustered.pkl"
+
 if not INPUT_PATH.exists():
-    print(
-        f"[오류] 데이터 파일이 존재하지 않습니다: {INPUT_PATH}\n'11_persona_clustering.py'를 먼저 실행해 주세요."
-    )
+    print(f"[오류] 군집화 데이터 파일이 존재하지 않습니다: {INPUT_PATH}")
+    print("먼저 '10_clustering_evaluation.py'를 실행해 주세요.")
     sys.exit(1)
 
 df = pd.read_pickle(INPUT_PATH)
-print(f"데이터 로드 완료! (전체 고객 수: {len(df):,}명)")
-
-# 3. 페르소나(Cluster)별 FP-Growth 연관 규칙 도출 함수
-results_all = []
 
 
-def run_association_rules_by_cluster(
-    cluster_df, cluster_id, min_support=0.01, min_threshold=0.1
+# 3. 군집별 FP-Growth 연관 분석 함수 정의 (임계값 조정)
+def analyze_cluster_association(
+    cluster_df, cluster_id, min_support=0.0005, min_lift=1.01
 ):
     print(
-        f"\n--- [Cluster {cluster_id}] 연관 분석 진행 중 (고객 수: {len(cluster_df):,}명) ---"
+        f"\n[처리 중] Cluster {cluster_id} 연관 분석 진행 (고객 수: {len(cluster_df):,}명)..."
     )
 
-    # 고객별 상품 리스트 추출
-    transactions = cluster_df["product_list"].dropna().tolist()
+    # 2개 이상의 상품을 보유한 고객만 타겟팅하여 연관 규칙 도출 정밀도 향상
+    multi_product_df = cluster_df[cluster_df["product_count"] >= 2]
+    if len(multi_product_df) == 0:
+        print(f"  - Cluster {cluster_id}: 다지점 가입 고객이 없습니다.")
+        return None
 
-    # TransactionEncoder 변환 (One-Hot DataFrame 생성)
+    transactions = multi_product_df["product_list"].tolist()
+
+    # 원-핫 인코딩 변환
     te = TransactionEncoder()
     te_ary = te.fit(transactions).transform(transactions)
-    df_tf = pd.DataFrame(te_ary, columns=te.columns_)
+    df_encoded = pd.DataFrame(te_ary, columns=te.columns_)
 
-    # FP-Growth로 Frequent Itemsets 추출 (Apriori 대비 고속 연산)
+    # FP-Growth 알고리즘 적용
     frequent_itemsets = fpgrowth(
-        df_tf, min_support=min_support, use_colnames=True
+        df_encoded, min_support=min_support, use_colnames=True
     )
 
     if frequent_itemsets.empty:
-        print(f"  • Cluster {cluster_id}: 설정한 min_support({min_support}) 기준을 만족하는 빈발 항목이 없습니다.")
+        print(
+            f"  - Cluster {cluster_id}: 조건(min_support={min_support})을 만족하는 빈발 항목집합이 없습니다."
+        )
         return None
 
-    # 연관 규칙 도출 (신뢰도 Confidence 기준)
     rules = association_rules(
-        frequent_itemsets, metric="confidence", min_threshold=min_threshold
+        frequent_itemsets, metric="lift", min_threshold=min_lift
     )
 
     if rules.empty:
-        print(f"  • Cluster {cluster_id}: 유의미한 연관 규칙이 도출되지 않았습니다.")
+        print(
+            f"  - Cluster {cluster_id}: 조건(min_lift={min_lift})을 만족하는 연관 규칙이 없습니다."
+        )
         return None
 
+    # 가공
+    rules["antecedents"] = rules["antecedents"].apply(
+        lambda x: ", ".join(list(x))
+    )
+    rules["consequents"] = rules["consequents"].apply(
+        lambda x: ", ".join(list(x))
+    )
     rules["cluster"] = cluster_id
-    rules["antecedents"] = rules["antecedents"].apply(lambda x: list(x))
-    rules["consequents"] = rules["consequents"].apply(lambda x: list(x))
 
-    # 향상도(Lift) 기준 내림차순 정렬
-    rules = rules.sort_values(by="lift", ascending=False)
-    print(f"  • Cluster {cluster_id}: 총 {len(rules)}개의 연관 규칙 발굴 완료!")
+    # 전체 고객 기준 지지도(Support)로 재계산
+    rules["support_total"] = rules["support"] * (
+        len(multi_product_df) / len(cluster_df)
+    )
+
+    rules = rules.sort_values(by="lift", ascending=False).reset_index(drop=True)
     return rules
 
 
-# 4. 전체 Cluster 대상 연관 규칙 도출 파이프라인
-for c_id in sorted(df["cluster"].unique()):
-    sub_df = df[df["cluster"] == c_id]
-    rules_c = run_association_rules_by_cluster(
-        sub_df, cluster_id=c_id, min_support=0.005, min_threshold=0.1
+# 4. 전체 군집 대상 연관 분석 실행
+all_rules_list = []
+for c_id in sorted(df["persona_cluster"].unique()):
+    c_df = df[df["persona_cluster"] == c_id]
+    rules_df = analyze_cluster_association(
+        c_df, cluster_id=c_id, min_support=0.0005, min_lift=1.01
     )
-    if rules_c is not None:
-        results_all.append(rules_c)
+    if rules_df is not None:
+        all_rules_list.append(rules_df)
 
-# 5. 결과 통합 및 저장
-if results_all:
-    final_rules_df = pd.concat(results_all, ignore_index=True)
-    save_csv_path = OUTPUT_DIR / "association_rules_k3.csv"
-    final_rules_df.to_csv(save_csv_path, index=False, encoding="utf-8-sig")
-    print(f"\n[완료] 전체 페르소나 연관 규칙 추출 및 CSV 저장 완료: {save_csv_path.name}")
+if all_rules_list:
+    final_rules = pd.concat(all_rules_list, ignore_index=True)
 
-    # 상위 5개 주요 규칙 미리보기 출력
-    preview_cols = [
-        "cluster",
-        "antecedents",
-        "consequents",
-        "support",
-        "confidence",
-        "lift",
-    ]
-    print("\n[발굴된 대표 연관 규칙 상위 5선 (Lift 기준)]")
-    print(final_rules_df[preview_cols].head(5).to_string(index=False))
+    # 5. 결과 저장
+    output_path = BASE_DIR / "output" / "association_rules_by_persona.pkl"
+    final_rules.to_pickle(output_path)
+    print(f"\n[완료] 연관성 분석 결과 저장 완료: {output_path.name}")
+
+    # 콘솔 요약 출력
+    print("\n" + "=" * 80)
+    print("[군집별 상위 핵심 교차판매 상품 패키지 (Lift TOP 1)]")
+    print("=" * 80)
+    for c_id in sorted(final_rules["cluster"].unique()):
+        c_rules = final_rules[final_rules["cluster"] == c_id]
+        if not c_rules.empty:
+            c_top = c_rules.iloc[0]
+            print(f"■ Cluster {c_id}")
+            print(
+                f"  - 추천 상품 조합: [{c_top['antecedents']}] -> [{c_top['consequents']}]"
+            )
+            print(
+                f"  - 지지도(Support): {c_top['support_total']:.5f} | 신뢰도(Confidence): {c_top['confidence']:.4f} | 향상도(Lift): {c_top['lift']:.2f}"
+            )
+            print("-" * 80)
+else:
+    print(
+        "\n[알림] 여전히 규칙이 도출되지 않으면 min_support를 0.0001 로 낮추어 시도하세요."
+    )
