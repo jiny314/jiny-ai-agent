@@ -1,0 +1,13 @@
+# Data Manipulation & Analysis
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.14.0
+
+# Machine Learning
+scikit-learn>=1.2.0
+
+# Database & Utility
+# sqlite3, pathlib, os, platform 등은 Python 표준 라이브러리에 포함되어 있어 작성 생략

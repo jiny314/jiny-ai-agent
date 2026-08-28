@@ -1,0 +1,43 @@
+# Python Virtual Environment
+.venv/
+venv/
+env/
+ENV/
+
+# Python Cache & Artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# Data Files & Database (저작권 보호 및 용량 관리)
+# 폴더 구조는 유지하되 생성 파일만 제외 설정
+data/*.csv
+output/*.db
+output/*.sqlite
+output/*.sqlite3
+output/*.png
+
+# 루트 또는 하위 전체 적용 예외
+*.csv
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE & Editor Settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS System Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Jupyter Notebook Checkpoints
+.ipynb_checkpoints/
