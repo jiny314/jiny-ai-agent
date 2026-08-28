@@ -4,6 +4,20 @@
 
 ---
 
+## 🛠️ Tech Stack & Tools
+
+| 구분 | 사용 기술 및 라이브러리 |
+| --- | --- |
+| **Language** | Python 3.10+ |
+| **Data Processing** | Pandas, NumPy, GeoPandas |
+| **Database & SQL** | SQLite3, SQL Window Functions (LAG, LEAD, Moving Average) |
+| **Machine Learning & Stat** | scikit-learn (K-Means, StandardScaler, Random Forest), mlxtend (FP-Growth) |
+| **Network Analysis** | NetworkX |
+| **Visualization** | Matplotlib, Seaborn |
+| **Environment** | Git, GitHub, VS Code |
+
+---
+
 ## 📌 프로젝트 목록 (Project List)
 
 * **[project1]** 초개인화 페르소나 기반 금융 상품 패키징 및 교차 판매(Cross-selling) 전략 도출
@@ -28,13 +42,13 @@
 
 ### 1. Project1 : 초개인화 페르소나 기반 금융 상품 패키징 및 교차 판매(Cross-selling) 전략 도출
 * **배경 및 목적**  
-  대규모 금융 거래 데이터(38.5만 건)를 활용하여 비지도학습($K=3$ K-Means) 기반 초개인화 페르소나를 도출합니다.  
+  대규모 금융 거래 데이터(38.5만 건)를 활용하여 비지도학습(K-Means, K=3) 기반 초개인화 페르소나를 도출합니다.  
   페르소나별 FP-Growth 연관 규칙 및 NetworkX 연결 중심성 그래프 분석을 적용하여 고객 유지율과 LTV를 극대화하는 맞춤형 교차 판매 패키징 시나리오를 수립합니다.
 
 ### 2. Project1-2 : SEOUL-GHOST-STORE (잠재 단절 상권 감지 및 입지 가치 재평가 파이프라인)
 * **배경 및 목적**  
   서울시 5개년(2021 Q1 ~ 2026 Q1) 길단위 유동인구 데이터를 활용하여 배후지 유동인구 대비 상권 유입률이 저평가된 '유령 상권(Shadow Market)'을 발굴합니다.  
-  단순 상권 매출이나 총인구수에 의존하던 입지 분석 방식에서 벗어나 '상권배후지-상권 간 유동인구 전이율'을 정의하고, 입지적 한계를 극복할 수 있는 잠재력 높은 '단절 상권' 활성화 솔루션을 제안합니다.
+  단순 상권 매출이나 총인구수에 의존하던 입지 분석 방식에서 벗어나 '상권배후지-상권 간 유동인구 전이율'을 정의하고, K-Means & 2x2 매트릭스를 통해 전체 1,090개 분석 상권 중 304개(27.9%)의 '잠재 단절 상권'을 핀셋 추출하여 활성화 솔루션을 제안합니다.
 
 ### 3. Project1-3 : AI 기반 OTT 콘텐츠 흥행 트래킹 및 글로벌 수급 의사결정 지원 시스템 기획
 * **배경 및 목적**  
