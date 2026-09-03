@@ -5,15 +5,32 @@ import sys
 # run_all.py 위치 기준 경로
 BASE_DIR = Path(__file__).resolve().parent
 
-# 로컬에 실제 존재하는 파이프라인 스크립트 리스트
+# 로컬에 실제 존재하는 파이프라인 스크립트 리스트 (의존관계 순서대로)
 scripts = [
+    # 1. 전처리
     "1_preprocess.py",
+    # 2~9. EDA (탐색적 데이터 분석) 및 시각화
     "2_eda_categorical_unique.py",
     "3_eda_missing_values.py",
+    "4_customer_data_vis.py",
+    "5_eda_summary_stats.py",
+    "6_eda_outliers.py",
+    "7_eda_product_distribution.py",
+    "8_eda_relationships.py",
+    "9_eda_visualizations_advanced.py",
+    # 10~11. 군집화 (K-Means) 및 페르소나 정의
     "10_clustering_evaluation.py",
     "11_persona_clustering.py",
+    # 12~13. 연관 규칙(FP-Growth) 및 네트워크 시각화
     "12_association_rules.py",
     "13_networkx_visualization.py",
+    # 14~16. 군집 검증 (GMM) 및 이상치 탐지 (DBSCAN)
+    "14_gmm_validation.py",
+    "15_community_detection.py",
+    "16_dbscan_outlier_detection.py",
+    # 17~18. 추천 엔진 및 시퀀셜 패턴 마이닝
+    "17_recommendation_engine.py",
+    "18_sequential_pattern_mining.py",
 ]
 
 print("=" * 70)
