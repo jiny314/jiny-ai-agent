@@ -11,11 +11,12 @@
 | **Language** | Python 3.10+ |
 | **Data Processing** | Pandas, NumPy, GeoPandas |
 | **Database & SQL** | SQLite3, SQL Window Functions (LAG, LEAD, Moving Average) |
-| **Machine Learning & Stat** | scikit-learn (K-Means, StandardScaler, Random Forest), mlxtend (FP-Growth) |
-| **Network Analysis** | NetworkX |
+| **Machine Learning & Clustering** | scikit-learn (K-Means, DBSCAN, Gaussian Mixture Model, StandardScaler, RobustScaler, Random Forest, TruncatedSVD) |
+| **Association & Sequence Mining** | mlxtend (Apriori, FP-Growth), PrefixSpan (시퀀셜 패턴 마이닝) |
+| **Network Analysis** | NetworkX (연관 네트워크, Community Detection/Louvain) |
+| **Optimization** | SciPy (Hungarian Algorithm, Sparse Matrix) |
 | **Visualization** | Matplotlib, Seaborn |
 | **Environment** | Git, GitHub, VS Code |
-
 ---
 
 ## 📌 프로젝트 목록 (Project List)

@@ -17,11 +17,14 @@ elif system_os == "Darwin":
     plt.rcParams["font.family"] = "AppleGothic"
 else:
     plt.rcParams["font.family"] = "NanumGothic"
-
 plt.rcParams["axes.unicode_minus"] = False
 
-# 2. 동적 상대 경로 설정 및 예외 처리
-BASE_DIR = Path(__file__).resolve().parent
+# 2. 실행 환경 독립적 동적 경로 설정 (스크립트 실행 / 인터랙티브 실행 모두 대응)
+try:
+    BASE_DIR = Path(__file__).resolve().parent
+except NameError:
+    BASE_DIR = Path.cwd()
+
 RULES_PATH = BASE_DIR / "output" / "association_rules_by_persona.pkl"
 OUTPUT_DIR = BASE_DIR / "output"
 
@@ -79,6 +82,11 @@ for c_id in cluster_ids:
     hub_node = max(degree_centrality, key=degree_centrality.get)
     hub_score = degree_centrality[hub_node]
 
+    # [추가] 클러스터별 연결 중심성(Degree Centrality) 상위 5개 상품 저장
+    top5_centrality = sorted(
+        degree_centrality.items(), key=lambda x: -x[1]
+    )[:5]
+
     # 브릿지(Bridge)는 "서로 다른 상품군을 이어주는 별도의 연결고리"를 찾는 지표이므로,
     # 허브 노드 자신(연결이 많아 매개 중심성도 함께 높게 나오는 경우가 흔함)을 제외한
     # 나머지 노드 중 매개 중심성이 가장 높은 노드를 브릿지로 정의한다.
@@ -102,6 +110,7 @@ for c_id in cluster_ids:
         "bridge": bridge_node,
         "bridge_score": bridge_score,
         "hub_is_bridge": bridge_node == hub_node,
+        "top5_centrality": top5_centrality,  # [추가]
     }
 
     # Spring Layout 적용 (노드 간격 조정)
@@ -167,4 +176,9 @@ for c_id, s in centrality_summary.items():
         print(f"     └ 브릿지(매개 중심성) 역할도 동시 수행 ({s['bridge_score']:.4f}) — 별도 브릿지 상품 없음")
     else:
         print(f"   - 브릿지(Bridge, 허브 제외 매개 중심성 최고): {s['bridge']} ({s['bridge_score']:.4f})")
+
+    # [추가] 연결 중심성(Degree Centrality) 상위 5개 상품 출력
+    print(f"   - [연결 중심성(Degree Centrality) TOP 5]")
+    for rank, (node, score) in enumerate(s["top5_centrality"], start=1):
+        print(f"     {rank}. {node}: {score:.4f}")
     print("-" * 80)

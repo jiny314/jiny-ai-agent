@@ -2,6 +2,7 @@ from pathlib import Path
 import platform
 import sys
 import warnings
+
 import matplotlib.pyplot as plt
 import networkx as nx
 import pandas as pd
@@ -20,16 +21,38 @@ else:
     plt.rcParams["font.family"] = "NanumGothic"
 plt.rcParams["axes.unicode_minus"] = False
 
-# 2. 동적 경로 설정 및 군집화 데이터 로드
-BASE_DIR = Path(__file__).resolve().parent
-INPUT_PATH = BASE_DIR / "output" / "customer_clustered.pkl"
+# 2. 실행 환경 독립적 동적 경로 설정 (스크립트 실행 / 인터랙티브 실행 모두 대응)
+try:
+    BASE_DIR = Path(__file__).resolve().parent
+except NameError:
+    BASE_DIR = Path.cwd()
 
-if not INPUT_PATH.exists():
-    print(f"[오류] 군집화 데이터 파일이 존재하지 않습니다: {INPUT_PATH}")
-    print("먼저 '10_clustering_evaluation.py'를 실행해 주세요.")
+OUTPUT_DIR = BASE_DIR / "output"
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+# 11_persona_clustering.py가 저장하는 파일명(customer_clustered_k3.pkl)을 우선 사용하고,
+# 과거 버전 파일명(customer_clustered.pkl)도 호환되도록 순차 탐색
+KMEANS_CANDIDATES = [
+    OUTPUT_DIR / "customer_clustered_k3.pkl",
+    OUTPUT_DIR / "customer_clustered.pkl",
+]
+INPUT_PATH = next((p for p in KMEANS_CANDIDATES if p.exists()), None)
+
+if INPUT_PATH is None:
+    print("[오류] K-Means 군집화 결과 파일이 존재하지 않습니다.")
+    print(f"확인한 경로: {[str(p) for p in KMEANS_CANDIDATES]}")
+    print("먼저 '11_persona_clustering.py'를 실행해 주세요.")
     sys.exit(1)
 
+print(f"[안내] K-Means 결과 파일 로드: {INPUT_PATH.name}")
 df = pd.read_pickle(INPUT_PATH)
+
+# 파일 버전에 따라 군집 컬럼명이 다를 수 있어 순차 탐색 (신규: cluster / 구버전: persona_cluster)
+cluster_col_candidates = ["cluster", "persona_cluster"]
+cluster_col = next((c for c in cluster_col_candidates if c in df.columns), None)
+if cluster_col is None:
+    print(f"[오류] K-Means 군집 컬럼을 찾을 수 없습니다. 확인한 컬럼명: {cluster_col_candidates}")
+    sys.exit(1)
 
 
 # 3. 군집별 FP-Growth 연관 분석 함수 정의 (임계값 조정)
@@ -94,8 +117,8 @@ def analyze_cluster_association(
 
 # 4. 전체 군집 대상 연관 분석 실행
 all_rules_list = []
-for c_id in sorted(df["persona_cluster"].unique()):
-    c_df = df[df["persona_cluster"] == c_id]
+for c_id in sorted(df[cluster_col].unique()):
+    c_df = df[df[cluster_col] == c_id]
     rules_df = analyze_cluster_association(
         c_df, cluster_id=c_id, min_support=0.0005, min_lift=1.01
     )
@@ -106,7 +129,7 @@ if all_rules_list:
     final_rules = pd.concat(all_rules_list, ignore_index=True)
 
     # 5. 결과 저장
-    output_path = BASE_DIR / "output" / "association_rules_by_persona.pkl"
+    output_path = OUTPUT_DIR / "association_rules_by_persona.pkl"
     final_rules.to_pickle(output_path)
     print(f"\n[완료] 연관성 분석 결과 저장 완료: {output_path.name}")
 
