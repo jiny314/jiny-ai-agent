@@ -65,22 +65,30 @@
 ```text
 jiny-ai-agent/
 │
-├── project1/                         # 1차 프로젝트 (금융 상품 교차판매) 전용 폴더
-│   ├── data/                         # 원본 데이터 폴더 (.gitignore 제외)
+├── project1/                              # 1차 프로젝트 (금융 상품 교차판매) 전용 폴더
+│   ├── data/                              # 원본 데이터 폴더 (.gitignore 제외)
 │   │   └── 소비자.csv
 │   │
-│   ├── output/                       # 전처리 및 분석 결과 산출물 (.pkl, .csv)
-│   │   ├── customer_processed.pkl
-│   │   ├── customer_clustered_k3.pkl
-│   │   └── association_rules_k3.csv
+│   ├── output/                            # 전처리 및 분석 결과 산출물 (.pkl, .png)
 │   │
-│   ├── 1_preprocess.py               # 01. 고객 단위 전처리 및 요약 집계
-│   ├── 2_eda_categorical_unique.py   # 02. EDA 주요 변수 분포 및 TOP10 상품 시각화
-│   ├── 3_eda_missing_values.py       # 03. 명시적/암묵적 결측치 정밀 집계
-│   ├── 10_clustering_evaluation.py   # 04. K-Means 최적 K값 산출 (Elbow & Silhouette)
-│   ├── 11_persona_clustering.py      # 05. 3대 페르소나 군집화 및 프로파일링
-│   ├── 12_association_rules.py       # 06. FP-Growth 기반 페르소나별 연관 규칙 도출
-│   └── 13_network_visualization.py   # 07. NetworkX 네트워크 그래프 및 중심성 분석
+│   ├── 1_preprocess.py                    # 01. 고객 단위 전처리 및 요약 집계
+│   ├── 2_eda_categorical_unique.py        # 02. 결측치/이상치 확인, 분포 및 변수 간 관계 시각화
+│   ├── 3_eda_missing_values.py            # 03. 명시적/암묵적 결측치 정밀 집계
+│   ├── 4_customer_data_vis.py             # 04. 주요 범주형 변수 유니크 값 및 분포 확인
+│   ├── 5_eda_summary_stats.py             # 05. 수치형 변수 요약 통계량
+│   ├── 6_eda_outliers.py                  # 06. 이상치/노이즈 데이터 파악 및 정제
+│   ├── 7_eda_product_distribution.py      # 07. 주요 분석 축 분포 및 클래스 불균형 분석
+│   ├── 8_eda_relationships.py             # 08. 변수 간 상관관계 및 교차 분석
+│   ├── 9_eda_visualizations_advanced.py   # 09. TOP 20 상품 파레토 분석 및 상관관계 히트맵
+│   ├── 10_clustering_evaluation.py        # 10. K-Means 최적 K값 산출 (Elbow & Silhouette)
+│   ├── 11_persona_clustering.py           # 11. 3대 페르소나 군집화 및 프로파일링
+│   ├── 14_gmm_validation.py               # 12. GMM 기반 군집 결과 교차 검증
+│   ├── 16_dbscan_outlier_detection.py     # 13. DBSCAN 기반 밀도 이상치 고객 탐지
+│   ├── 12_association_rules.py            # 14. FP-Growth 기반 페르소나별 연관 규칙 도출
+│   ├── 13_networkx_visualization.py       # 15. NetworkX 네트워크 그래프 및 중심성 분석
+│   ├── 15_community_detection.py          # 16. Louvain 기반 상품 커뮤니티 탐지
+│   ├── 18_sequential_pattern_mining.py    # 17. PrefixSpan 기반 시퀀셜 패턴 마이닝
+│   └── 17_recommendation_engine.py        # 18. 협업 필터링/행렬분해 기반 추천 엔진 및 평가
 │
 ├── project1-2/                       # 1차 추가 프로젝트 (서울시 유령상권 분석) 전용 폴더
 │   ├── data/                         # 프로젝트 데이터 폴더 (.gitignore 제외)

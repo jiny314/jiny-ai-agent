@@ -20,7 +20,10 @@ else:
 plt.rcParams["axes.unicode_minus"] = False
 
 # 2. 동적 경로 설정 및 군집화 데이터 로드
-BASE_DIR = Path(__file__).resolve().parent
+try:
+    BASE_DIR = Path(__file__).resolve().parent
+except NameError:
+    BASE_DIR = Path.cwd()
 CLUSTERED_PATH = BASE_DIR / "output" / "customer_clustered.pkl"
 
 if not CLUSTERED_PATH.exists():

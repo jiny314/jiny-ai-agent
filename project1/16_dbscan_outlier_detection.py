@@ -54,8 +54,6 @@ if KMEANS_PATH is None:
     print("먼저 '11_persona_clustering.py'를 실행해 주세요.")
     sys.exit(1)
 
-print(f"[안내] K-Means 결과 파일 로드: {KMEANS_PATH.name}")
-
 df_processed = pd.read_pickle(PROCESSED_PATH)
 df_kmeans = pd.read_pickle(KMEANS_PATH)
 
@@ -65,7 +63,9 @@ if kmeans_col is None:
     print(f"[오류] K-Means 군집 컬럼을 찾을 수 없습니다. 확인한 컬럼명: {kmeans_col_candidates}")
     sys.exit(1)
 
-# 3. 11/14번과 동일한 피처 엔지니어링 (비교 일관성 유지)
+# 3. 베이스라인 피처 세트로 독립 검증
+#    (10_clustering_evaluation.py의 확장 피처셋과는 별도로, 단순한 4개 피처만으로도
+#     DBSCAN 밀도 기반 이상치 탐지가 안정적으로 작동하는지 교차 검증하기 위한 목적)
 feature_cols = ["age", "income_bracket", "total_transaction_amt", "product_count"]
 clustering_df = df_processed[feature_cols].copy()
 clustering_df["total_transaction_amt"] = np.log1p(clustering_df["total_transaction_amt"])
@@ -78,8 +78,12 @@ n_features = scaled_features.shape[1]
 MIN_SAMPLES = max(10, n_features * 2)
 
 # 4. eps 자동 탐지 (k-distance 그래프의 knee point)
+#    주의: NearestNeighbors는 fit/query에 같은 데이터를 쓰면 자기 자신(거리 0)이
+#    첫 번째 이웃으로 포함된다. 이를 그대로 두면 실제로는 (MIN_SAMPLES-1)번째
+#    이웃까지의 거리를 쓰게 되므로, n_neighbors를 +1 해서 자기 자신을 제외한
+#    진짜 MIN_SAMPLES번째 이웃 거리를 구한다.
 print(f"[처리 중] k-distance 계산 중 (min_samples={MIN_SAMPLES})... 데이터 규모(전체 {len(scaled_features):,}건)에 따라 몇 분 소요될 수 있습니다.")
-nn = NearestNeighbors(n_neighbors=MIN_SAMPLES, n_jobs=-1)
+nn = NearestNeighbors(n_neighbors=MIN_SAMPLES + 1, n_jobs=-1)
 nn.fit(scaled_features)
 distances, _ = nn.kneighbors(scaled_features)
 k_distances = np.sort(distances[:, -1])

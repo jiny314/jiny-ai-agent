@@ -3,7 +3,10 @@ import pandas as pd
 import sys
 
 # 1. 동적 경로 설정 (OS 및 타 환경 호환)
-BASE_DIR = Path(__file__).resolve().parent
+try:
+    BASE_DIR = Path(__file__).resolve().parent
+except NameError:
+    BASE_DIR = Path.cwd()
 DATA_DIR = BASE_DIR / "data"
 OUTPUT_DIR = BASE_DIR / "output"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

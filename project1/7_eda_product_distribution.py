@@ -7,7 +7,10 @@ import pandas as pd
 warnings.filterwarnings("ignore")
 
 # 1. 동적 경로 설정 및 예외 처리
-BASE_DIR = Path(__file__).resolve().parent
+try:
+    BASE_DIR = Path(__file__).resolve().parent
+except NameError:
+    BASE_DIR = Path.cwd()
 PROCESSED_PATH = BASE_DIR / "output" / "customer_processed.pkl"
 CSV_PATH = BASE_DIR / "data" / "소비자.csv"
 

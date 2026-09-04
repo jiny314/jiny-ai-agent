@@ -3,7 +3,10 @@ import sys
 import pandas as pd
 
 # 1. 동적 경로 설정 및 데이터 파일 검증
-BASE_DIR = Path(__file__).resolve().parent
+try:
+    BASE_DIR = Path(__file__).resolve().parent
+except NameError:
+    BASE_DIR = Path.cwd()
 csv_path = BASE_DIR / "data" / "소비자.csv"
 
 if not csv_path.exists():

@@ -75,6 +75,9 @@ def _get_cmap(name, n):
             return cm.get_cmap(name, n)
 
 
+# 노드가 많을 때 라벨이 서로 겹치는 걸 막기 위한 상한
+MAX_LABELS = 20
+
 cluster_ids = sorted(rules_df["cluster"].unique())
 community_summary = {}
 
@@ -107,6 +110,8 @@ for c_id in cluster_ids:
         else:
             G_undirected.add_edge(u, v, weight=weight)
 
+    n_nodes = G_undirected.number_of_nodes()
+
     if LOUVAIN_SOURCE == "networkx":
         communities = nx.community.louvain_communities(
             G_undirected, weight="weight", seed=42
@@ -128,8 +133,13 @@ for c_id in cluster_ids:
             node_to_community[node] = idx
 
     # 5. 시각화 (그래프 구조는 원본 노드 그대로 사용 - 13번과 동일)
-    fig, ax = plt.subplots(figsize=(11, 9))
-    pos = nx.spring_layout(G_undirected, k=0.8, seed=42)
+    # 노드 수에 비례해 figure 크기와 노드 간격을 동적으로 키움 (라벨 겹침 방지)
+    fig_w = max(11, n_nodes * 0.35)
+    fig_h = max(9, n_nodes * 0.28)
+    fig, ax = plt.subplots(figsize=(fig_w, fig_h))
+
+    layout_k = 0.8 if n_nodes <= MAX_LABELS else 1.4
+    pos = nx.spring_layout(G_undirected, k=layout_k, seed=42)
 
     palette = _get_cmap("tab10", len(communities))
     node_colors = [palette(node_to_community[n]) for n in G_undirected.nodes()]
@@ -137,9 +147,24 @@ for c_id in cluster_ids:
     nx.draw_networkx_nodes(
         G_undirected, pos, node_size=1500, node_color=node_colors, alpha=0.9, ax=ax
     )
+
+    # 노드가 많으면(MAX_LABELS 초과) 연결 중심성 상위 노드만 라벨 표시
+    if n_nodes > MAX_LABELS:
+        degree_centrality = nx.degree_centrality(G_undirected)
+        top_nodes = sorted(degree_centrality.items(), key=lambda x: -x[1])[:MAX_LABELS]
+        label_dict = {n: n for n, _ in top_nodes}
+        ax.text(
+            0.99, 0.01,
+            f"※ 연결 중심성 상위 {MAX_LABELS}개 상품명만 표시 (전체 {n_nodes}개)",
+            transform=ax.transAxes, ha="right", va="bottom", fontsize=8, color="gray",
+        )
+    else:
+        label_dict = {n: n for n in G_undirected.nodes()}
+
     nx.draw_networkx_labels(
         G_undirected,
         pos,
+        labels=label_dict,
         font_family=plt.rcParams["font.family"],
         font_size=9,
         font_weight="bold",

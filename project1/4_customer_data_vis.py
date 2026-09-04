@@ -18,7 +18,10 @@ plt.rc("axes", unicode_minus=False)
 sns.set_theme(style="whitegrid", font=plt.rcParams["font.family"])
 
 # 2. 동적 경로 설정 및 데이터 검증
-BASE_DIR = Path(__file__).resolve().parent
+try:
+    BASE_DIR = Path(__file__).resolve().parent
+except NameError:
+    BASE_DIR = Path.cwd()
 PROCESSED_PATH = BASE_DIR / "output" / "customer_processed.pkl"
 
 if not PROCESSED_PATH.exists():

@@ -39,6 +39,9 @@ rules_df = pd.read_pickle(RULES_PATH)
 # 4. 클러스터별로 각각 독립된 이미지 1장씩 생성
 cluster_ids = sorted(rules_df["cluster"].unique())
 
+# 노드가 많을 때 라벨이 서로 겹치는 걸 막기 위한 상한
+MAX_LABELS = 20
+
 # 클러스터별 중심성 결과를 뒤 요약 출력에서도 재사용할 수 있도록 저장
 centrality_summary = {}
 
@@ -52,9 +55,8 @@ for c_id in cluster_ids:
         & (cluster_rules["consequents"] != "기타 상품")
     ]
 
-    fig, ax = plt.subplots(figsize=(11, 9))
-
     if sub_rules.empty:
+        fig, ax = plt.subplots(figsize=(11, 9))
         ax.set_title(f"Cluster {c_id}: 도출된 규칙 없음", fontsize=14)
         ax.axis("off")
         fig_path = OUTPUT_DIR / f"network_graph_cluster{c_id}.png"
@@ -74,6 +76,8 @@ for c_id in cluster_ids:
         lift = row["lift"]
 
         G.add_edge(ant, con, weight=lift)
+
+    n_nodes = G.number_of_nodes()
 
     # 중심성 지표 계산 (허브 = Degree Centrality, 브릿지 = Betweenness Centrality)
     degree_centrality = nx.degree_centrality(G)
@@ -102,7 +106,7 @@ for c_id in cluster_ids:
         bridge_score = betweenness_centrality[hub_node]
 
     centrality_summary[c_id] = {
-        "nodes": G.number_of_nodes(),
+        "nodes": n_nodes,
         "edges": G.number_of_edges(),
         "rules": total_rule_count,
         "hub": hub_node,
@@ -113,8 +117,13 @@ for c_id in cluster_ids:
         "top5_centrality": top5_centrality,  # [추가]
     }
 
-    # Spring Layout 적용 (노드 간격 조정)
-    pos = nx.spring_layout(G, k=0.8, seed=42)
+    # 노드 수에 비례해 figure 크기와 노드 간격을 동적으로 키움 (라벨 겹침 방지)
+    fig_w = max(11, n_nodes * 0.35)
+    fig_h = max(9, n_nodes * 0.28)
+    fig, ax = plt.subplots(figsize=(fig_w, fig_h))
+
+    layout_k = 0.8 if n_nodes <= MAX_LABELS else 1.4
+    pos = nx.spring_layout(G, k=layout_k, seed=42)
 
     # 허브(연결 중심성 최상위)·브릿지(매개 중심성 최상위) 노드를 시각적으로 강조
     def _node_color(n):
@@ -130,9 +139,26 @@ for c_id in cluster_ids:
     nx.draw_networkx_nodes(
         G, pos, node_size=1500, node_color=node_colors, alpha=0.9, ax=ax
     )
+
+    # 노드가 많으면(MAX_LABELS 초과) 연결 중심성 상위 노드만 라벨 표시
+    if n_nodes > MAX_LABELS:
+        label_nodes = {n for n, _ in top5_centrality}
+        label_nodes |= {
+            n for n, _ in sorted(degree_centrality.items(), key=lambda x: -x[1])[:MAX_LABELS]
+        }
+        label_dict = {n: n for n in label_nodes}
+        ax.text(
+            0.99, 0.01,
+            f"※ 연결 중심성 상위 {MAX_LABELS}개 상품명만 표시 (전체 {n_nodes}개)",
+            transform=ax.transAxes, ha="right", va="bottom", fontsize=8, color="gray",
+        )
+    else:
+        label_dict = {n: n for n in G.nodes()}
+
     nx.draw_networkx_labels(
         G,
         pos,
+        labels=label_dict,
         font_family=plt.rcParams["font.family"],
         font_size=9,
         font_weight="bold",
