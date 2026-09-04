@@ -87,8 +87,8 @@ jiny-ai-agent/
 │   ├── 12_association_rules.py            # 14. FP-Growth 기반 페르소나별 연관 규칙 도출
 │   ├── 13_networkx_visualization.py       # 15. NetworkX 네트워크 그래프 및 중심성 분석
 │   ├── 15_community_detection.py          # 16. Louvain 기반 상품 커뮤니티 탐지
-│   ├── 18_sequential_pattern_mining.py    # 17. PrefixSpan 기반 시퀀셜 패턴 마이닝
-│   └── 17_recommendation_engine.py        # 18. 협업 필터링/행렬분해 기반 추천 엔진 및 평가
+│   ├── 17_recommendation_engine.py        # 17. 협업 필터링/행렬분해 기반 추천 엔진 및 평가
+│   └── 18_sequential_pattern_mining.py    # 18. PrefixSpan 기반 시퀀셜 패턴 마이닝
 │
 ├── project1-2/                       # 1차 추가 프로젝트 (서울시 유령상권 분석) 전용 폴더
 │   ├── data/                         # 프로젝트 데이터 폴더 (.gitignore 제외)
